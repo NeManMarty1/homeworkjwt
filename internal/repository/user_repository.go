@@ -5,6 +5,9 @@ import (
 	"homeworkjwt/internal/models"
 )
 
+// TODO:
+// Использовать postgres в качестве DB
+
 type UserRepository struct {
 	users  []models.User
 	nextID int

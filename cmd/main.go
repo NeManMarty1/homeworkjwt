@@ -1,23 +1,32 @@
 package main
 
 import (
-	"project/internal/handlers"
-	"project/internal/middleware"
-	"project/internal/repository"
-	"project/internal/services"
-	"project/internal/utils"
+	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
+
+	"homeworkjwt/internal/config"
+	"homeworkjwt/internal/handlers"
+	"homeworkjwt/internal/middleware"
+	"homeworkjwt/internal/repository"
+	"homeworkjwt/internal/services"
 )
 
 func main() {
+	// Получение конфигурации приложения
+	cfg, err := config.GetConfigFromEnv()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %s\n", err.Error())
+	}
+
 	userRepo := repository.NewUserRepository()
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
 	r := gin.Default()
 
-	authMiddleware := middleware.AuthMiddleware(utils.JWTSecret)
+	authMiddleware := middleware.AuthMiddleware(cfg.JWT.Secret)
 
 	r.POST("/login", userHandler.Login)
 	r.POST("/register", userHandler.Register)
@@ -26,5 +35,5 @@ func main() {
 	protected.Use(authMiddleware)
 	protected.GET("/profile", userHandler.GetProfile)
 
-	r.Run(":8080")
+	r.Run(fmt.Sprintf(":%s", cfg.HTTP.Port))
 }
