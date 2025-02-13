@@ -5,6 +5,7 @@ import (
 	"homeworkjwt/internal/models"
 	"homeworkjwt/internal/repository"
 	"homeworkjwt/internal/utils"
+	"os"
 )
 
 type UserService struct {
@@ -40,7 +41,12 @@ func (s *UserService) Login(email, password string) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
-	token, err := utils.GenerateJWT(user.ID, utils.JWTSecret)
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		return "", errors.New("JWT secret is not set")
+	}
+
+	token, err := utils.GenerateJWT(user.ID, jwtSecret)
 	if err != nil {
 		return "", err
 	}

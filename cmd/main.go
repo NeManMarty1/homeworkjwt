@@ -1,30 +1,46 @@
 package main
 
 import (
-	"project/internal/handlers"
-	"project/internal/middleware"
-	"project/internal/repository"
-	"project/internal/services"
-	"project/internal/utils"
+	"homeworkjwt/internal/config"
+	"homeworkjwt/internal/handlers"
+	"homeworkjwt/internal/middleware"
+	"homeworkjwt/internal/repository"
+	"homeworkjwt/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	userRepo := repository.NewUserRepository()
-	userService := services.NewUserService(userRepo)
-	userHandler := handlers.NewUserHandler(userService)
+
+	cfg := config.LoadConfig()
+
+	repo := repository.NewUserRepository()
+	service := services.NewUserService(repo)
+	handler := handlers.NewUserHandler(service)
 
 	r := gin.Default()
 
-	authMiddleware := middleware.AuthMiddleware(utils.JWTSecret)
+	r.POST("/login", func(c *gin.Context) {
+		var input struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
 
-	r.POST("/login", userHandler.Login)
-	r.POST("/register", userHandler.Register)
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
 
-	protected := r.Group("/")
-	protected.Use(authMiddleware)
-	protected.GET("/profile", userHandler.GetProfile)
+		token, err := service.Login(input.Email, input.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
 
-	r.Run(":8080")
+		c.JSON(200, gin.H{"token": token})
+	})
+
+	r.GET("/profile", middleware.AuthMiddleware(cfg.JWTSecret), handler.GetProfile)
+
+	r.Run(":" + cfg.AppPort)
 }
