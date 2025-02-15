@@ -1,12 +1,12 @@
 package pgdb
 
 import (
-	"homeworkjwt/internal/postgres"
 	"homeworkjwt/internal/pgdb/impl"
+	"homeworkjwt/internal/postgres"
 )
 
 type Repositories struct {
-	impl.UserRepo
+	User *impl.UserRepo
 }
 
 func NewRepositries(pg *postgres.Postgres) *Repositories {

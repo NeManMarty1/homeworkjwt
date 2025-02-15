@@ -9,7 +9,7 @@ import (
 	"homeworkjwt/internal/config"
 	"homeworkjwt/internal/handlers"
 	"homeworkjwt/internal/middleware"
-	"homeworkjwt/internal/repository"
+	// "homeworkjwt/internal/repository"
 	"homeworkjwt/internal/services"
 	"homeworkjwt/internal/postgres"
 	"homeworkjwt/internal/pgdb"
@@ -27,8 +27,8 @@ func main() {
 	// Инициализация репоизториев, используя пул соединений с PostgreSQL
 	repositories := pgdb.NewRepositries(pool)
 
-	userRepo := repository.NewUserRepository()
-	userService := services.NewUserService(userRepo)
+	// userRepo := repository.NewUserRepository()
+	userService := services.NewUserService(repositories)
 	userHandler := handlers.NewUserHandler(userService)
 
 	r := gin.Default()
