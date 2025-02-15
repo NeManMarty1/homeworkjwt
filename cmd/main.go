@@ -11,6 +11,8 @@ import (
 	"homeworkjwt/internal/middleware"
 	"homeworkjwt/internal/repository"
 	"homeworkjwt/internal/services"
+	"homeworkjwt/internal/postgres"
+	"homeworkjwt/internal/pgdb"
 )
 
 func main() {
@@ -19,6 +21,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %s\n", err.Error())
 	}
+
+	// Инициализация клиента с PostgreSQL
+	pool := postgres.New(cfg)
+	// Инициализация репоизториев, используя пул соединений с PostgreSQL
+	repositories := pgdb.NewRepositries(pool)
 
 	userRepo := repository.NewUserRepository()
 	userService := services.NewUserService(userRepo)

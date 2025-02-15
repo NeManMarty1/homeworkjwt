@@ -10,6 +10,13 @@ import (
 type (
 	// Config - cтруктура для хранения конфигурации приложения.
 	Config struct {
+		// Параметры бд
+		Postgres struct {
+			User 		string `envconfig:"PG_USER" required:"true"`
+			Password 	string `envconfig:"PG_PASSWORD" required:"true"`
+			Database 	string `envconfig:"PG_DB" required:"true"`
+			HostPort 	string `envconfig:"PG_HOST_PORT" required:"true"`
+		}
 
 		// Параметры для HTTP
 		HTTP struct {
