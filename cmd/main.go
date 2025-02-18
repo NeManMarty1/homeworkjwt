@@ -9,10 +9,12 @@ import (
 	"homeworkjwt/internal/config"
 	"homeworkjwt/internal/handlers"
 	"homeworkjwt/internal/middleware"
+
 	// "homeworkjwt/internal/repository"
-	"homeworkjwt/internal/services"
-	"homeworkjwt/internal/postgres"
+	migrate "homeworkjwt/internal/app"
 	"homeworkjwt/internal/pgdb"
+	"homeworkjwt/internal/postgres"
+	"homeworkjwt/internal/services"
 )
 
 func main() {
@@ -24,6 +26,11 @@ func main() {
 
 	// Инициализация клиента с PostgreSQL
 	pool := postgres.New(cfg)
+
+	err = migrate.InitMigrations()
+	if err != nil {
+		log.Fatalf("Failed to initialize migrations: %s", err.Error())
+	}
 	// Инициализация репоизториев, используя пул соединений с PostgreSQL
 	repositories := pgdb.NewRepositries(pool)
 
