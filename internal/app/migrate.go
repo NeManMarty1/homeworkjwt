@@ -18,7 +18,6 @@ const (
 
 // InitMigrations запускает миграцию, принимая строку подключения к базе данных
 func InitMigrations() error {
-	// Получаем строку подключения к базе данных из переменной окружения
 	databaseURL, ok := os.LookupEnv("PG_URL")
 	if !ok || len(databaseURL) == 0 {
 		log.Fatalf("migrate: environment variable not declared: PG_URL")
