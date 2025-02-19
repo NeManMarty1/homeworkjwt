@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"homeworkjwt/internal/models"
 	"homeworkjwt/internal/services"
 	"net/http"
@@ -25,7 +26,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 
 	user, err := h.service.Register(input)
 	if err != nil {
-		if err == services.ErrUserAlreadyExists {
+		if errors.Is(err, services.ErrUserAlreadyExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
 			return
 		}
@@ -45,7 +46,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 	token, err := h.service.Login(input.Email, input.Password)
 	if err != nil {
-		if err == services.ErrInvalidCredentials {
+		if errors.Is(err, services.ErrInvalidCredentials) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 			return
 		}
@@ -65,7 +66,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 
 	user, err := h.service.GetByID(userID.(int))
 	if err != nil {
-		if err == services.ErrUserNotFound {
+		if errors.Is(err, services.ErrUserNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
